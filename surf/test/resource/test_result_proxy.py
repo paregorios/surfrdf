@@ -55,7 +55,7 @@ def test_limit_offset(store_proxy):
     try:
         store.expect_args({"limit": 10, "offset": 5})
         list(proxy.limit(10).offset(5))
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -67,7 +67,7 @@ def test_full(store_proxy):
     try:
         store.expect_args({'full': True, 'direct_only': True})
         list(proxy.full(direct_only=True))
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -79,7 +79,7 @@ def test_order_desc(store_proxy):
     try:
         store.expect_args({"order": "some_attr", "desc": True})
         list(proxy.order("some_attr").desc())
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -89,10 +89,10 @@ def test_get_by(store_proxy):
     """
     store, proxy = store_proxy
     try:
-        expected = [(surf.ns.FOAF["name"], Literal(u"Jane"), True)]
+        expected = [(surf.ns.FOAF["name"], Literal("Jane"), True)]
         store.expect_args({"get_by": expected})
         list(proxy.get_by(foaf_name="Jane"))
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -104,7 +104,7 @@ def test_context(store_proxy):
     try:
         store.expect_args({"context": "my_context"})
         list(proxy.context("my_context"))
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -114,9 +114,9 @@ def test_filter(store_proxy):
     """
     store, proxy = store_proxy
     try:
-        store.expect_args({"filter": [(surf.ns.FOAF["name"], Literal(u"f"), True)]})
+        store.expect_args({"filter": [(surf.ns.FOAF["name"], Literal("f"), True)]})
         list(proxy.filter(foaf_name="f"))
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -130,5 +130,5 @@ def test_get_by_resource(store_proxy):
         expected = [(surf.ns.FOAF["knows"], resource.subject, True)]
         store.expect_args({"get_by" : expected})
         list(proxy.get_by(foaf_knows = resource))
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)

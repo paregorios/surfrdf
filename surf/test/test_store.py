@@ -27,7 +27,7 @@ def test_multiples():
         store.save(rob, michael)
         store.update(rob, michael)
         store.remove(rob, michael)
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -53,7 +53,7 @@ def test_close_unicode_exception():
             pass
 
         def close(self):
-            raise Exception(u"Some unicode: ā")
+            raise Exception("Some unicode: ā")
 
     class MockWriter(RDFWriter):
         def _set_triple(self, s=None, p=None, o=None, context=None):
@@ -78,7 +78,7 @@ def test_close_unicode_exception():
             pass
 
         def close(self):
-            raise Exception(u"Some unicode: ā")
+            raise Exception("Some unicode: ā")
 
     try:
         reader = MockReader()
@@ -86,7 +86,7 @@ def test_close_unicode_exception():
         logging.disable(logging.ERROR)
         store.close()
         logging.disable(logging.NOTSET)
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -143,5 +143,5 @@ def test_successful_close():
         reader = MockReader()
         store = Store(reader, MockWriter(reader), log_level=logging.NOTSET)
         store.close()
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)

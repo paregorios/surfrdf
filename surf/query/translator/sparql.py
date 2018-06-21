@@ -58,7 +58,7 @@ class SparqlTranslator(QueryTranslator):
         if query.query_type == DESCRIBE:
             query_type = "DESCRIBE"
 
-        rep = u'%(query_type)s %(modifier)s %(vars)s %(from_)s %(from_named)s WHERE { %(where)s } %(order_by)s %(limit)s %(offset)s '
+        rep = '%(query_type)s %(modifier)s %(vars)s %(from_)s %(from_named)s WHERE { %(where)s } %(order_by)s %(limit)s %(offset)s '
         modifier = query.query_modifier and query.query_modifier.upper() or ''
         limit = query.query_limit and ' LIMIT %d ' % (query.query_limit) or ''
         offset = query.query_offset and ' OFFSET %d ' % (query.query_offset) or ''        
@@ -82,7 +82,7 @@ class SparqlTranslator(QueryTranslator):
                      'order_by'     : order_by, })
 
     def _translate_ask(self, query):
-        rep = u'ASK %(from_)s %(from_named)s { %(where)s }'
+        rep = 'ASK %(from_)s %(from_named)s { %(where)s }'
         from_ = ' '.join([ "FROM <%s>" % uri for uri in query.query_from])
         from_named = ' '.join([ "FROM NAMED <%s>" % uri for uri in query.query_from_named])
         where = '. '.join([self._statement(stmt) for stmt in self.query.query_data])
@@ -93,7 +93,7 @@ class SparqlTranslator(QueryTranslator):
     def _term(self, term):
         if type(term) in [URIRef, BNode]:
             return '%s' % (term.n3())
-        elif type(term) in [str, unicode]:
+        elif type(term) in [str, str]:
             if term.startswith('?'):
                 return '%s' % term
             elif is_uri(term):

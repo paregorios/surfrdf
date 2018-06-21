@@ -5,7 +5,7 @@
 # Recipe 204197: SOLVING THE METACLASS CONFLICT
 # http://code.activestate.com/recipes/204197/
 
-import inspect, types, __builtin__
+import inspect, types, builtins
 
 '''
 .. note:: This module appears `as is` and is based on the `Recipe 204197:
@@ -27,7 +27,7 @@ def skip_redundant(iterable, skipset=None):
 
 
 def remove_redundant(metaclasses):
-    skipset = set([types.ClassType])
+    skipset = set([type])
     for meta in metaclasses: # determines the metaclasses to be skipped
         skipset.update(inspect.getmro(meta)[1:])
     return tuple(skip_redundant(metaclasses, skipset))

@@ -50,7 +50,7 @@ PY2 = sys.version_info[0] == 2
 
 str_version = None
 if PY2:
-    execfile('{0}/__version__.py'.format(NAME))
+    exec(compile(open('{0}/__version__.py'.format(NAME)).read(), '{0}/__version__.py'.format(NAME), 'exec'))
 else:
     exec(open('{0}/__version__.py'.format(NAME)).read())
 

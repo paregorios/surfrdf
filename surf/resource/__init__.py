@@ -96,7 +96,7 @@ class ResourceMeta(type):
         return getattr(self_as_instance, attr_name)
 
 
-class Resource(object):
+class Resource(object, metaclass=ResourceMeta):
     """
     The Resource class, represents the transparent proxy object that exposes
     sets of RDF triples under the form of <s,p,o> and <s',p,s> as an object
@@ -164,8 +164,6 @@ class Resource(object):
         [rdflib.URIRef('http://p1'), <surf.session.FoafPerson object at 0xad049cc>]
 
     """
-
-    __metaclass__ = ResourceMeta
     _dirty_instances = set()
     
     def __init__(self, subject = None, block_auto_load = False, context = None,
@@ -193,7 +191,7 @@ class Resource(object):
         if context == NO_CONTEXT:
             self.__context  = None
         elif context:
-            self.__context  = URIRef(unicode(context))
+            self.__context  = URIRef(str(context))
         elif self.session and self.store_key:
             self.__context  = self.session[self.store_key].default_context
         
@@ -313,7 +311,7 @@ class Resource(object):
         # uris might be an iterator, but we want each
         # element from it as separate argument, so
         # converting to list.
-        classes = map(uri_to_class, list(uris[1:]))
+        classes = list(map(uri_to_class, list(uris[1:])))
 
         return cls.session.map_instance(uri, subject, classes = classes,
                                         block_auto_load = block_auto_load,
@@ -347,7 +345,7 @@ class Resource(object):
         """
 
         for ns in namespaces:
-            if type(ns) in [str, unicode]:
+            if type(ns) in [str, str]:
                 self.__namespaces[ns] = get_namespace_url(ns)
             elif type(ns) in [Namespace, ClosedNamespace]:
                 self.__namespaces[get_prefix(ns)] = ns
@@ -413,7 +411,7 @@ class Resource(object):
             else:
                 if type(value) not in [list, tuple]: 
                     value = [value]
-                value               = map(value_to_rdf, value)
+                value               = list(map(value_to_rdf, value))
                 getvalues_callable  = prepare_getvalues_callable(value, rdf_dict[predicate])
                 value               = LazyResourceLoader(getvalues_callable, self, name)
 
@@ -561,7 +559,7 @@ class Resource(object):
 
         """
 
-        for p, v in results.items():
+        for p, v in list(results.items()):
             attr = rdf2attr(p, direct)
             value = self._lazy(v)
             if value:
@@ -591,7 +589,7 @@ class Resource(object):
             subjects.update(cls.session[cls.store_key].instances_by_attribute(cls, inverse_attributes, False, context))
         
         instances = []
-        for s, types in subjects.items():
+        for s, types in list(subjects.items()):
             if not isinstance(s, URIRef):
                 continue
 
@@ -628,7 +626,7 @@ class Resource(object):
         # In results?
         if (not _rdf_type and "direct" in data and RDF_TYPE in data["direct"]
             and data["direct"][RDF_TYPE]):
-            _rdf_type = data["direct"][RDF_TYPE].keys()[0]
+            _rdf_type = list(data["direct"][RDF_TYPE].keys())[0]
 
         if _rdf_type is None:
             # We don't know rdf:type, so cannot instantiate Resource,
@@ -755,7 +753,7 @@ class Resource(object):
     def __str__(self):
         """ Return `string` representation of the resource. """
 
-        return '{%s : %s}' % (unicode(self.subject), unicode(self.uri))
+        return '{%s : %s}' % (str(self.subject), str(self.uri))
 
     def save(self):
         """ Save the `resource` to the data `store`. """
@@ -824,11 +822,11 @@ class Resource(object):
         for s, p, o in graph:
             attr_name = None
             value = None
-            if unicode(s) == unicode(self.subject):
+            if str(s) == str(self.subject):
                 attr_name = rdf2attr(p, True)
                 #value = self.__lazy([o])
                 value = o
-            elif unicode(o) == unicode(self.subject):
+            elif str(o) == str(self.subject):
                 attr_name = rdf2attr(p, False)
                 #value = self.__lazy([s])
                 value = s

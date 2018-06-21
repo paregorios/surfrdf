@@ -46,12 +46,10 @@ class InvalidResourceException(Exception):
         super(InvalidResourceException,self).__init__(self,*args,**kwargs)
 
 
-class RDFWriter(Plugin):
+class RDFWriter(Plugin, metaclass=ABCMeta):
     """
     Super class for all surf Writer plugins.
     """
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, reader, *args, **kwargs):
         super(RDFWriter, self).__init__(*args, **kwargs)

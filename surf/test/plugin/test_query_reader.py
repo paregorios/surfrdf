@@ -22,11 +22,11 @@ def test_convert_unicode_exception():
         # but we know __convert calls _to_table...
         def _to_table(self, _):
             warnings.simplefilter("ignore")
-            raise Exception(u"This is unicode: ā")
+            raise Exception("This is unicode: ā")
 
     try:
         logging.disable(logging.ERROR)
         MyQueryReader().convert(None)
         logging.disable(logging.NOTSET)
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)

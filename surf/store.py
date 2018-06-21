@@ -108,13 +108,13 @@ class Store(object):
         try:
             self.reader.close()
             debug('reader closed successfully')
-        except Exception, e:
+        except Exception as e:
             error("Error on closing the reader: %s", e.message)
 
         try:
             self.writer.close()
             debug('writer closed successfully')
-        except Exception, e:
+        except Exception as e:
             error("Error on closing the writer: %s", e.message)
 
     def get(self, resource, attribute, direct):
@@ -160,7 +160,7 @@ class Store(object):
     def execute_sparql(self, sparql_query, format = 'JSON'):
         """see :meth:`surf.plugin.query_reader.RDFQueryReader.execute_sparql` method. """
 
-        if hasattr(self.reader, 'execute_sparql') and type(sparql_query) in [str, unicode]:
+        if hasattr(self.reader, 'execute_sparql') and type(sparql_query) in [str, str]:
             return self.reader.execute_sparql(sparql_query, format = format)
         return None
 

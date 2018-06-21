@@ -190,12 +190,10 @@ def _apply_solution_modifiers(params, query):
     return query
 
 
-class RDFQueryReader(RDFReader):
+class RDFQueryReader(RDFReader, metaclass=ABCMeta):
     """
     Super class for SuRF Reader plugins that wrap queryable `stores`.
     """
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, *args, **kwargs):
         super(RDFQueryReader, self).__init__(*args, **kwargs)

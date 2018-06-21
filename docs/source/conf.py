@@ -55,9 +55,9 @@ dir_surf = os.path.join(os.path.split(os.path.split(os.path.split(__file__)[0])[
 dir_docs = os.path.abspath(os.path.dirname(__file__))
 dir_plugins = os.path.join(os.path.split(dir_surf)[0],'plugins')
 
-print 'SURF     DIR = ',dir_surf
-print 'DOCS     DIR = ',dir_docs
-print 'PLUGINS  DIR = ',dir_plugins
+print('SURF     DIR = ',dir_surf)
+print('DOCS     DIR = ',dir_docs)
+print('PLUGINS  DIR = ',dir_plugins)
 
 sys.path.append(os.path.abspath(dir_plugins))
 sys.path.append(os.path.abspath(dir_docs))
@@ -93,8 +93,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'SuRF'
-copyright = u'2009, Cosmin Basca'
+project = 'SuRF'
+copyright = '2009, Cosmin Basca'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -102,7 +102,7 @@ copyright = u'2009, Cosmin Basca'
 #
 # The short X.Y version.
 str_version = ''
-execfile('../../surf/__version__.py')
+exec(compile(open('../../surf/__version__.py').read(), '../../surf/__version__.py', 'exec'))
 version = str_version[:str_version.rfind('.')]
 # The full version, including alpha/beta/rc tags.
 release = str_version
@@ -342,8 +342,8 @@ htmlhelp_basename = 'SuRFdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'SuRF.tex', u'SuRF Documentation',
-   u'Cosmin Basca', 'manual'),
+  ('index', 'SuRF.tex', 'SuRF Documentation',
+   'Cosmin Basca', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

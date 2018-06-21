@@ -35,9 +35,9 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Cosmin Basca'
 
-import sesame2
-from urllib import urlencode
-import httplib
+from . import sesame2
+from urllib.parse import urlencode
+import http.client
 import os, os.path, shutil
 
 class AllegroException(Exception):
@@ -125,6 +125,6 @@ class Allegro(sesame2.Sesame2):
 
 if __name__ == '__main__':
     allegro = Allegro('localhost', 5678, '/sesame', r'd:\repositories')
-    print 'Protocol : ', allegro.protocol()
-    print 'Open :', allegro.open_repository('corona')
-    print 'Repositories : ', allegro.repositories()
+    print('Protocol : ', allegro.protocol())
+    print('Open :', allegro.open_repository('corona'))
+    print('Repositories : ', allegro.repositories())

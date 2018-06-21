@@ -93,7 +93,7 @@ def test_limit_offset(store_value):
     try:
         store.expect_args({"limit": 10, "offset": 5})
         list(value.limit(10).offset(5))
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -105,7 +105,7 @@ def test_full(store_value):
     try:
         store.expect_args({'full': True, 'direct_only': True})
         list(value.full(direct_only=True))
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -117,7 +117,7 @@ def test_order_desc(store_value):
     try:
         store.expect_args({"order": "some_attr", "desc": True})
         list(value.order("some_attr").desc())
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -127,10 +127,10 @@ def test_get_by(store_value):
     """
     store, value = store_value
     try:
-        expected = [(surf.ns.FOAF["name"], Literal(u"Jane"), True)]
+        expected = [(surf.ns.FOAF["name"], Literal("Jane"), True)]
         store.expect_args({"get_by": expected})
         list(value.get_by(foaf_name="Jane"))
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -142,7 +142,7 @@ def test_context(store_value):
     try:
         store.expect_args({"context": "my_context"})
         list(value.context("my_context"))
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -152,9 +152,9 @@ def test_filter(store_value):
     """
     store, value = store_value
     try:
-        store.expect_args({"filter": [(surf.ns.FOAF["name"], Literal(u"f"), True)]})
+        store.expect_args({"filter": [(surf.ns.FOAF["name"], Literal("f"), True)]})
         list(value.filter(foaf_name="f"))
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -168,5 +168,5 @@ def test_get_by_resource(store_value):
         expected = [(surf.ns.FOAF["knows"], resource.subject, True)]
         store.expect_args({"get_by": expected})
         list(value.get_by(foaf_knows=resource))
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)

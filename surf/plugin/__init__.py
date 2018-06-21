@@ -39,12 +39,10 @@ import logging
 __author__ = 'Cosmin Basca'
 
 
-class Plugin(object):
+class Plugin(object, metaclass=ABCMeta):
     """
     Super class for all SuRF plugins, provides basic instantiation and `logging`.
     """
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, *args, **kwargs):
         super(Plugin, self).__init__()

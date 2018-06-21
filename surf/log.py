@@ -113,7 +113,7 @@ def set_logger_level(level, name=None):
     logging._acquireLock()
     try:
         logger = logging.getLogger(name) if name else logging.root
-        if isinstance(level, basestring):
+        if isinstance(level, str):
             level = level.upper()
         logger.setLevel(level)
     finally:

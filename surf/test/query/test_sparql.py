@@ -14,7 +14,7 @@ def canonical(sparql_string):
     capitalization differences.
     """
 
-    assert(isinstance(sparql_string, unicode))
+    assert(isinstance(sparql_string, str))
     
     result = sparql_string.strip().lower()
     result = re.sub("\s\s+", " ", result)
@@ -41,12 +41,12 @@ def test_simple():
     Try to produce a simple "SELECT ... WHERE ..." query.
     """
 
-    expected = canonical(u"SELECT ?s ?p ?o WHERE { ?s ?p ?o }")
+    expected = canonical("SELECT ?s ?p ?o WHERE { ?s ?p ?o }")
     query = select("?s", "?p", "?o").where(("?s", "?p", "?o"))
     result = SparqlTranslator(query).translate()
 
     # Translated query should be unicode object.
-    assert isinstance(result, unicode)
+    assert isinstance(result, str)
 
     result = canonical(result)
     assert expected == result
@@ -57,7 +57,7 @@ def test_subquery():
     Try to produce query that contains subquery in WHERE clause.
     """
 
-    expected = canonical(u"""
+    expected = canonical("""
         SELECT ?s ?p ?o
         WHERE {
             ?s ?p ?o.
@@ -78,7 +78,7 @@ def test_from():
     Try to produce query that contains FROM clauses.
     """
 
-    expected = canonical(u"""
+    expected = canonical("""
         SELECT ?s ?p ?o
         FROM <http://uri1>
         FROM <http://uri2>
@@ -99,7 +99,7 @@ def test_from_named():
     Try to produce query that contains FROM & FROM NAMED clauses.
     """
 
-    expected = canonical(u"""
+    expected = canonical("""
         SELECT ?s ?p ?o
         FROM <http://uri1>
         FROM NAMED <http://uri1>
@@ -122,7 +122,7 @@ def test_describe():
     Try to produce DESCRIBE query.
     """
 
-    expected = canonical(u"""
+    expected = canonical("""
         DESCRIBE ?s
         FROM <http://uri1>
         WHERE {
@@ -152,7 +152,7 @@ def test_union():
     Try to produce query containing union.
     """
 
-    expected = canonical(u"""
+    expected = canonical("""
         SELECT ?s
         WHERE {
             { ?s ?v1 ?v2} UNION { ?s ?v3  ?v4 }
@@ -170,7 +170,7 @@ def test_str():
     Try str(query).
     """
 
-    expected = canonical(u"""
+    expected = canonical("""
         SELECT ?s ?p ?o
         WHERE {
             ?s ?p ?o
@@ -179,9 +179,9 @@ def test_str():
 
     query = select("?s", "?p", "?o").where(("?s", "?p", "?o"))
     # test str()
-    assert expected == canonical(unicode(str(query)))
+    assert expected == canonical(str(str(query)))
     # test unicode()
-    assert expected == canonical(unicode(query))
+    assert expected == canonical(str(query))
 
 
 def test_ask():
@@ -189,7 +189,7 @@ def test_ask():
     Try ASK.
     """
 
-    expected = canonical(u"""
+    expected = canonical("""
         ASK FROM <http://uri1>
         {
             ?s ?p ?o

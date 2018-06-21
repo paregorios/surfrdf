@@ -64,7 +64,7 @@ class NamedGroup(Group):
     """
     def __init__(self, name = None):
         super(NamedGroup, self).__init__()
-        if isinstance(name, URIRef) or (type(name) in [str, unicode] and name.startswith('?')):
+        if isinstance(name, URIRef) or (type(name) in [str, str] and name.startswith('?')):
             self.name = name
         else:
             raise ValueError("Invalid specifier for named group"
@@ -84,18 +84,18 @@ class Union(Group):
     """
 
 
-class Filter(unicode):
+class Filter(str):
     """
     A **SPARQL** triple pattern filter
     """
     @classmethod
     def regex(cls, var, pattern, flag=None):
-        if isinstance(var, (str, unicode)) and var.startswith('?'):
+        if isinstance(var, str) and var.startswith('?'):
             pass
         else:
             raise ValueError('not a filter variable')
 
-        if isinstance(pattern, (str, unicode)):
+        if isinstance(pattern, str):
             pass
         elif isinstance(pattern, Literal):
             pattern = '"{0:s}"@{1:s}'.format(pattern, pattern.language)
@@ -107,14 +107,14 @@ class Filter(unicode):
         if flag is None:
             flag = ""
         else:
-            if not isinstance(flag, (str, unicode)):
+            if not isinstance(flag, str):
                 raise ValueError('not a filter flag')
 
-        return Filter('regex({0:s},"{1:s}"{2:s})'.format(var, pattern, u',"{0:s}"'.format(flag)))
+        return Filter('regex({0:s},"{1:s}"{2:s})'.format(var, pattern, ',"{0:s}"'.format(flag)))
 
 
 def _validate_variable(variable):
-    if isinstance(variable, (str, unicode)):
+    if isinstance(variable, str):
         if variable.startswith('?'):
             return True
         elif re.match('\s*\(\s*.+\s+AS\s+\?.+\)\s*$', variable):
@@ -349,7 +349,7 @@ class Query(object):
 
         if not filter:
             return self
-        elif type(filter) in [str, unicode]:
+        elif type(filter) in [str, str]:
             filter = Filter(filter)
         elif type(filter) is not Filter:
             raise ValueError('the filter must be of type Filter, str or unicode following the syntax of the query language')
@@ -389,7 +389,7 @@ class Query(object):
         return SparqlTranslator(self).translate()
 
     def __str__(self):
-        return unicode(self).encode("utf-8")
+        return str(self).encode("utf-8")
 
 
 def validate_statement(statement):
@@ -401,20 +401,20 @@ def validate_statement(statement):
                 raise ValueError('''Statement of type [list, tuple] does not
                                  have all the (s,p,o) members (the length of the
                                  supplied arguemnt must be at least 3)''')
-            if isinstance(s, (URIRef, BNode)) or (isinstance(s, (str, unicode)) and s.startswith('?')):
+            if isinstance(s, (URIRef, BNode)) or (isinstance(s, str) and s.startswith('?')):
                 pass
             else:
                 raise ValueError('The subject is not a valid variable type')
 
-            if isinstance(p, URIRef) or (isinstance(p, (str, unicode)) and p.startswith('?')):
+            if isinstance(p, URIRef) or (isinstance(p, str) and p.startswith('?')):
                 pass
             else:
                 raise ValueError('The predicate is not a valid variable type')
 
-            if isinstance(o, (URIRef, BNode, Literal)) or (isinstance(o, (str, unicode)) and o.startswith('?')):
+            if isinstance(o, (URIRef, BNode, Literal)) or (isinstance(o, str) and o.startswith('?')):
                 pass
             else:
-                raise ValueError(u'The object is not a valid variable type: {0:s}'.format(o))
+                raise ValueError('The object is not a valid variable type: {0:s}'.format(o))
 
         return True
     else:

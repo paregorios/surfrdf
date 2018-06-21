@@ -14,7 +14,7 @@ def canonical(sparql_string):
     capitalization differences.
     """
     
-    assert(isinstance(sparql_string, unicode))
+    assert(isinstance(sparql_string, str))
     
     result = sparql_string.strip().lower()
     result = re.sub("\s\s+", " ", result)
@@ -41,7 +41,7 @@ def test_insert():
     Try to produce INSERT ... query.
     """
 
-    expected = canonical(u"INSERT { <http://a> <http://b> <http://c> }")
+    expected = canonical("INSERT { <http://a> <http://b> <http://c> }")
     statement = URIRef("http://a"), URIRef("http://b"), URIRef("http://c")
     query = insert().template(statement)
     result = canonical(SparulTranslator(query).translate())
@@ -53,7 +53,7 @@ def test_delete_from():
     Try to produce DELETE DATA FROM ... { ... } query.
     """
 
-    expected = canonical(u"DELETE DATA FROM <g> { <a>  <b> <c> }")
+    expected = canonical("DELETE DATA FROM <g> { <a>  <b> <c> }")
     statement = URIRef("a"), URIRef("b"), URIRef("c")
     query = delete(data = True).from_(URIRef("g")).template(statement)
     result = canonical(SparulTranslator(query).translate())
@@ -65,7 +65,7 @@ def test_insert_data_into():
     INSERT DATA INTO ... { ... }
     """
 
-    expected = canonical(u"INSERT DATA INTO <g> { <a>  <b> <c>. <a> <b> <d> }")
+    expected = canonical("INSERT DATA INTO <g> { <a>  <b> <c>. <a> <b> <d> }")
     st1 = URIRef("a"), URIRef("b"), URIRef("c")
     st2 = URIRef("a"), URIRef("b"), URIRef("d")
     query = insert(data = True).into(URIRef("g"))
@@ -80,7 +80,7 @@ def test_delete_where():
     DELETE ... WHERE ...
     """
 
-    expected = canonical(u"""
+    expected = canonical("""
         DELETE { ?book ?p ?v }
         WHERE
           { ?book ?p ?v .
@@ -101,7 +101,7 @@ def test_clear():
     CLEAR GRAPH
     """
 
-    expected = canonical(u"""
+    expected = canonical("""
         CLEAR GRAPH <a>
     """)
 
@@ -115,7 +115,7 @@ def test_load():
     LOAD ...
     """
 
-    expected = canonical(u"""
+    expected = canonical("""
         LOAD <http://example.com>
     """)
 
@@ -129,7 +129,7 @@ def test_load_into():
     LOAD ... INTO ...
     """
 
-    expected = canonical(u"""
+    expected = canonical("""
         LOAD <http://example.com> INTO <http://example.com/graph>
     """)
 
@@ -147,7 +147,7 @@ def test_unicode():
     statement = URIRef("http://a"), URIRef("http://b"), URIRef("http://c")
     query = insert().template(statement)
     result = SparulTranslator(query).translate()
-    assert isinstance(result, unicode)
+    assert isinstance(result, str)
 
 
 def test_str():
@@ -155,11 +155,11 @@ def test_str():
     Test that __str__ translates query to string.
     """
 
-    expected = canonical(u"INSERT { <http://a> <http://b> <http://c> }")
+    expected = canonical("INSERT { <http://a> <http://b> <http://c> }")
     statement = URIRef("http://a"), URIRef("http://b"), URIRef("http://c")
     query = insert().template(statement)
 
     # test str()
-    assert expected == canonical(unicode(str(query)))
+    assert expected == canonical(str(str(query)))
     # test unicode()
-    assert expected == canonical(unicode(query))
+    assert expected == canonical(str(query))

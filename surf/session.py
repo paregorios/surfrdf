@@ -118,7 +118,7 @@ class Session(object):
         return self._stores.__iter__()
 
     def __reversed__(self):
-        return self._stores.items().__reversed__()
+        return list(self._stores.items()).__reversed__()
 
     def __contains__(self, item):
         """ True if the `item` is contained within the managed `stores`. """
@@ -126,7 +126,7 @@ class Session(object):
 
     def keys(self):
         """ The `keys` that are assigned to the managed `stores`. """
-        return self._stores.keys()
+        return list(self._stores.keys())
 
     @property
     def auto_persist(self):
@@ -160,11 +160,11 @@ class Session(object):
 
     @property
     def log_level(self):
-        return dict((sid, store.log_level) for sid, store in self._stores.iteritems())
+        return dict((sid, store.log_level) for sid, store in self._stores.items())
 
     @log_level.setter
     def log_level(self, level):
-        for sid, store in self._stores.iteritems():
+        for sid, store in self._stores.items():
             store.log_level = level
 
     # TODO: add caching ... need strategies
@@ -192,7 +192,7 @@ class Session(object):
         if DEFAULT_STORE_KEY in self._stores:
             return DEFAULT_STORE_KEY
         elif len(self._stores) > 0:
-            return self._stores.keys()[0]
+            return list(self._stores.keys())[0]
         return None
 
     @property
@@ -236,7 +236,7 @@ class Session(object):
 
         """
 
-        for store in self._stores.keys():
+        for store in list(self._stores.keys()):
             self._stores[store].close()
             del self._stores[store]
 
@@ -293,7 +293,7 @@ class Session(object):
         classes = classes if isinstance(classes, (tuple, set, list)) else []
 
         if not type(subject) in [URIRef, BNode]:
-            subject = URIRef(unicode(subject))
+            subject = URIRef(str(subject))
 
         if not store:
             store = self.default_store_key
@@ -310,7 +310,7 @@ class Session(object):
         classes = classes if isinstance(classes, (tuple, set, list)) else []
 
         if not isinstance(subject, URIRef):
-            subject = URIRef(unicode(subject))
+            subject = URIRef(str(subject))
 
         if concept is None:
             concept = Resource.concept(subject)

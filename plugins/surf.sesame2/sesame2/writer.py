@@ -35,10 +35,10 @@
 # -*- coding: utf-8 -*-
 from surf.log import *
 from surf.plugin.writer import RDFWriter
-from allegro import Allegro
+from .allegro import Allegro
 
 from surf.rdf import BNode, Literal, URIRef
-from reader import ReaderPlugin
+from .reader import ReaderPlugin
 
 __author__ = 'Cosmin Basca'
 
@@ -72,7 +72,7 @@ class WriterPlugin(RDFWriter):
 
             if self.__use_allegro_extensions:
                 opened = self.get_allegro().open_repository(self.repository)
-                info('ALLEGRO repository opened: ' + unicode(opened))
+                info('ALLEGRO repository opened: ' + str(opened))
 
     server = property(lambda self: self.__server)
     port = property(lambda self: self.__port)

@@ -35,13 +35,13 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Cosmin Basca'
 
-import httplib
+import http.client
 import logging
-from urllib import urlencode
+from urllib.parse import urlencode
 from xml.dom.minidom import parseString, getDOMImplementation
 try:
     from json import loads
-except Exception, e:
+except Exception as e:
     from simplejson import loads
 
 from surf.rdf import BNode, ConjunctiveGraph, Graph, Literal, Namespace, URIRef
@@ -97,7 +97,7 @@ def parse_sparql_xml(response):
                 value = boolean.childNodes[0].nodeValue
                 return {'false': False, 'true': True}[value]
         except:
-            print 'NOT XML Response: %s' % response
+            print('NOT XML Response: %s' % response)
             return []
 
 '''
@@ -115,13 +115,13 @@ class RDFTransaction(object):
         node = None
         if type(entity) is URIRef:
             node = self.transaction.createElement('uri')
-            node.appendChild(self.transaction.createTextNode(unicode(entity)))
+            node.appendChild(self.transaction.createTextNode(str(entity)))
         elif type(entity) is BNode:
             node = self.transaction.createElement('bnode')
-            node.appendChild(self.transaction.createTextNode(unicode(entity)))
+            node.appendChild(self.transaction.createTextNode(str(entity)))
         elif type(entity) is Literal:
             node = self.transaction.createElement('literal')
-            node.appendChild(self.transaction.createTextNode(unicode(entity)))
+            node.appendChild(self.transaction.createTextNode(str(entity)))
             if entity.lang:
                 node.setAttribute('xml:lang', entity.lang)
             if entity.datatype:
@@ -135,7 +135,7 @@ class RDFTransaction(object):
             node.appendChild(self._rdf_node(p))
             node.appendChild(self._rdf_node(o))
             if context:
-                node.appendChild(self.transaction.createTextNode(unicode(context)))
+                node.appendChild(self.transaction.createTextNode(str(context)))
             self.root.appendChild(node)
         except:
             pass
@@ -148,7 +148,7 @@ class RDFTransaction(object):
                 node.appendChild(self._rdf_node(p))
                 node.appendChild(self._rdf_node(o))
                 if context:
-                    node.appendChild(self.transaction.createTextNode(unicode(context)))
+                    node.appendChild(self.transaction.createTextNode(str(context)))
             self.root.appendChild(node)
         except:
             pass
@@ -162,7 +162,7 @@ class RDFTransaction(object):
                 node.appendChild(self._rdf_node(p))
                 node.appendChild(self._rdf_node(o))
                 if context:
-                    node.appendChild(self.transaction.createTextNode(unicode(context)))
+                    node.appendChild(self.transaction.createTextNode(str(context)))
             self.root.appendChild(node)
         except:
             pass
@@ -170,7 +170,7 @@ class RDFTransaction(object):
     def clear(self, context = None):
         node = self.transaction.createElement('clear')
         if context:
-            node.appendChild(self.transaction.createTextNode(unicode(context)))
+            node.appendChild(self.transaction.createTextNode(str(context)))
         self.root.appendChild(node)
 
 
@@ -178,7 +178,7 @@ class RDFTransaction(object):
         for prefix in namespaces:
             node = self.transaction.createElement('setNamespace')
             node.setAttribute('prefix', prefix)
-            node.setAttribute('name', unicode(namespaces[prefix]))
+            node.setAttribute('name', str(namespaces[prefix]))
             self.root.appendChild(node)
 
     def remove_namespace(self, *namespaces):
@@ -201,7 +201,7 @@ class Sesame2Exception(Exception):
     def __str__(self):
         return 'Sesame 2 exception, response = [%d, %s, %s]' % (self._response.status, self._response.reason, self._response.read())
 
-class Sesame2(httplib.HTTPConnection):
+class Sesame2(http.client.HTTPConnection):
     url = {
         'protocol'          : '/protocol',
         'repositories'      : '/repositories',
@@ -243,7 +243,7 @@ class Sesame2(httplib.HTTPConnection):
     }
 
     def __init__(self, host, port = 80, root_path = '/sesame', strict = False):
-        httplib.HTTPConnection.__init__(self, host, port, strict)
+        http.client.HTTPConnection.__init__(self, host, port, strict)
         self.root_path = root_path
 
     def __del__(self):
@@ -258,7 +258,7 @@ class Sesame2(httplib.HTTPConnection):
 
         format = 'text'
         if isinstance(content_type, str):
-            for type, mimetype in Sesame2.response_format.items():
+            for type, mimetype in list(Sesame2.response_format.items()):
                 if content_type.startswith(mimetype):
                     format = type
         
@@ -284,7 +284,7 @@ class Sesame2(httplib.HTTPConnection):
         if response.status in [200, 204]:
             return self.__deserialize(response)
         else:
-            print response.read()
+            print(response.read())
             raise Sesame2Exception(response)
 
     def protocol(self):
@@ -399,7 +399,7 @@ class Sesame2(httplib.HTTPConnection):
             response = self.sesame2_request(method, 'statements', {'id':id}, body = rdf_data,
                                         params = params,
                                         headers = {'Content-type': Sesame2.request_format[content_type]})
-        except Sesame2Exception, e:
+        except Sesame2Exception as e:
             return False
         return True
 
@@ -407,7 +407,7 @@ class Sesame2(httplib.HTTPConnection):
         try:
             response = self.sesame2_request('POST', 'statements', {'id':id}, body = rdf_transaction.xml(),
                                         headers = {'Content-type': RDFTransaction.mime})
-        except Sesame2Exception, e:
+        except Sesame2Exception as e:
             return False
         return True
 
@@ -415,8 +415,8 @@ if __name__ == '__main__':
     allegro = Sesame2('localhost', 5678, '/sesame')
 
 
-    print 'Protocol : ', allegro.protocol()
-    print 'Repositories : ', allegro.repositories()
+    print('Protocol : ', allegro.protocol())
+    print('Repositories : ', allegro.repositories())
     '''
     print 'Add ns : ',allegro.add_namespace(1,'foaf','http://xmlns.com/foaf/0.1/')
     print 'Namespaces : ',allegro.namespaces(1)

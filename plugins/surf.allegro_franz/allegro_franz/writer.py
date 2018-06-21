@@ -91,7 +91,7 @@ class WriterPlugin(RDFWriter):
         for resource in resources:
             s = resource.subject
             self.__remove(s, context=resource.context)
-            for p, objs in resource.rdf_direct.items():
+            for p, objs in list(resource.rdf_direct.items()):
                 for o in objs:
                     self.__add(s, p, o, resource.context)
 
@@ -100,7 +100,7 @@ class WriterPlugin(RDFWriter):
             s = resource.subject
             for p in resource.rdf_direct:
                 self.__remove(s, p, context=resource.context)
-            for p, objs in resource.rdf_direct.items():
+            for p, objs in list(resource.rdf_direct.items()):
                 for o in objs:
                     self.__add(s, p, o, resource.context)
 
@@ -170,7 +170,7 @@ class WriterPlugin(RDFWriter):
         '''
         register free text search predicates
         '''
-        self.__allegro_repository.registerFreeTextPredicate(namespace = unicode(namespace), localname = localname)
+        self.__allegro_repository.registerFreeTextPredicate(namespace = str(namespace), localname = localname)
 
     def namespaces(self):
         return self.__con.getNamespaces()

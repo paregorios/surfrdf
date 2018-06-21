@@ -64,28 +64,29 @@ def toRdfLib(term):
                 return Literal(term.getLabel(), lang=term.getLanguage(),
                                 datatype=dtype)
 
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
     elif type(term) is fBNode:
         return BNode(term.getID())
     elif type(term) in [list,tuple]:
-        return map(toRdfLib, term)
+        return list(map(toRdfLib, term))
     return term
 
 def toSesame(term,factory):
     if type(term) in (URIRef, Namespace):
-        return factory.createURI(unicode(term))
+        return factory.createURI(str(term))
     elif type(term) is Literal:
-        return factory.createLiteral(unicode(term),datatype=term.datatype,language=term.language)
+        return factory.createLiteral(str(term),datatype=term.datatype,language=term.language)
     elif type(term) is BNode:
-        return factory.createBNode(unicode(term))
+        return factory.createBNode(str(term))
     elif type(term) in [list, tuple]:
-        return map(lambda item: toSesame(item,factory), term)
+        return [toSesame(item,factory) for item in term]
     return term
 
 
 # STATEMENTS
-def toStatement((s,p,o),factory,context=None):
+def toStatement(xxx_todo_changeme,factory,context=None):
+    (s,p,o) = xxx_todo_changeme
     return factory.createStatement(s,p,o,context)
 
 def toTuple(statement):

@@ -28,5 +28,5 @@ def test_get_by():
     session = surf.Session(store)
     Person = session.get_class(ns.FOAF['Person'])
 
-    persons = Person.get_by(foaf_name=u"John")
+    persons = Person.get_by(foaf_name="John")
     assert isinstance(persons, (list, ResultProxy))

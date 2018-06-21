@@ -40,12 +40,10 @@ from surf.plugin import Plugin
 __author__ = 'Cosmin Basca'
 
 
-class RDFReader(Plugin):
+class RDFReader(Plugin, metaclass=ABCMeta):
     """
     Super class for all surf Reader plugins.
     """
-
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def _get(self, subject, attribute, direct, context):

@@ -36,7 +36,7 @@
 from surf.log import *
 from surf.util import json_to_rdflib
 from surf.plugin.query_reader import RDFQueryReader
-from allegro import Allegro
+from .allegro import Allegro
 
 __author__ = 'Cosmin Basca'
 
@@ -85,7 +85,7 @@ class ReaderPlugin(RDFQueryReader):
 
     # execute
     def _execute(self, query):
-        q_string = unicode(query)
+        q_string = str(query)
         result = self.execute_sparql(q_string)
 
         if 'boolean' in result:
@@ -94,7 +94,7 @@ class ReaderPlugin(RDFQueryReader):
         converted = []
         for binding in result["results"]["bindings"]:
             rdf_item = {}
-            for key, obj in binding.items():
+            for key, obj in list(binding.items()):
                 try:
                     rdf_item[key] = json_to_rdflib(obj)
                 except ValueError:
@@ -117,7 +117,7 @@ class ReaderPlugin(RDFQueryReader):
             else:
                 return result
 
-        except Exception, e:
+        except Exception as e:
             error("Exception on query")
 
     def close(self):

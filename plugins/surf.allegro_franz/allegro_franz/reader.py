@@ -98,9 +98,9 @@ class ReaderPlugin(RDFQueryReader):
     # execute
     def _execute(self, query):
         if query.query_type == 'select':
-            return self.__execute_select(unicode(query))
+            return self.__execute_select(str(query))
         elif query.query_type == 'ask':
-            return self.__execute_ask(unicode(query))
+            return self.__execute_ask(str(query))
 
     def __execute_ask(self, q_string):
         debug(q_string)
@@ -154,7 +154,7 @@ class ReaderPlugin(RDFQueryReader):
                     if dtype:
                         if type(dtype) is sv.URI:
                             json_binding[b]['datatype'] = dtype.getURI()
-                        elif type(dtype) in [str, unicode] and dtype.startswith('<') and dtype.endswith('>'):
+                        elif type(dtype) in [str, str] and dtype.startswith('<') and dtype.endswith('>'):
                             json_binding[b]['datatype'] = URIRef(dtype.strip('<>'))
                         else:
                             json_binding[b]['datatype'] = URIRef(dtype)

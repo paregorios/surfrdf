@@ -135,7 +135,7 @@ def test_default_namespace(store_session):
     Person = session.get_class(surf.ns.FOAF.Person)
     surf.ns.register_fallback("http://example.com/ns#")
     p = Person()
-    assert unicode(p.subject).startswith("http://example.com/ns#")
+    assert str(p.subject).startswith("http://example.com/ns#")
 
 
 def test_multiple_sessions(store_session):
@@ -166,7 +166,7 @@ def test_instance(store_session):
 
         subject = surf.ns.SURF.test1
         Thing._instance(subject, [surf.ns.OWL.Thing], store=Thing.store_key)
-    except Exception, e:
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
 
 
@@ -187,7 +187,7 @@ def test_type_mapping(store_session):
     t1.save()
 
     t1 = Thing("http://t1")
-    assert type(t1.surf_string_value.first) == unicode
+    assert type(t1.surf_string_value.first) == str
     assert type(t1.surf_bool_value.first) == bool
     assert type(t1.surf_float_value.first) == float
     assert type(t1.surf_int_value.first) == int
@@ -204,12 +204,12 @@ def test_dict_access():
     person.foaf_name = "John"
 
     # Reading
-    assert person["foaf_name"].first == Literal(u"John")
-    assert person[surf.ns.FOAF.name].first == Literal(u"John")
+    assert person["foaf_name"].first == Literal("John")
+    assert person[surf.ns.FOAF.name].first == Literal("John")
 
     # Writing
     person["foaf_name"] = "Dave"
-    assert person.foaf_name.first == Literal(u"Dave")
+    assert person.foaf_name.first == Literal("Dave")
 
     # Deleting
     del person["foaf_name"]
@@ -245,7 +245,7 @@ def test_query_attribute_unicode(store_session):
     def mock_get_by(self, **kwargs):
         """ Verify that all passed keywords are strings. """
 
-        for keyword in kwargs.keys():
+        for keyword in list(kwargs.keys()):
             assert isinstance(keyword, str), \
                 "Passed non-string keyword: %s" % keyword
 
@@ -256,8 +256,8 @@ def test_query_attribute_unicode(store_session):
     try:
         # Patch ResultProxy with mock get_by method
         original_get_by, RP.get_by = RP.get_by, mock_get_by
-        resource.query_attribute(u"foaf_knows")
-    except Exception, e:
+        resource.query_attribute("foaf_knows")
+    except Exception as e:
         pytest.fail(e.message, pytrace=True)
     finally:
         # Regardless of results, revert our patch so other tests are not

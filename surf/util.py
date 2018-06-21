@@ -37,7 +37,7 @@ import logging
 from datetime import datetime, date, time
 import decimal
 import re
-from urlparse import urlparse
+from urllib.parse import urlparse
 from uuid import uuid4
 
 from surf.namespace import get_namespace, get_namespace_url
@@ -310,7 +310,7 @@ def pretty_rdf(uri):
         uri = uri.subject
     if type(uri) is URIRef:
         NS, symbol = uri_split(uri)
-        if unicode(NS).startswith('NS'):
+        if str(NS).startswith('NS'):
             pretty = symbol
         else:
             pretty = NS.lower() + ':' + symbol
@@ -328,8 +328,8 @@ def value_to_rdf(value):
     """
     if isinstance(value, (URIRef, BNode)):
         return value
-    elif isinstance(value, (basestring, str, unicode, float, int, long, bool, datetime, date, time, decimal.Decimal)):
-        if type(value) is basestring and string_conforms_to_base64(value):
+    elif isinstance(value, (str, float, int, bool, datetime, date, time, decimal.Decimal)):
+        if type(value) is str and string_conforms_to_base64(value):
             return Literal(value, datatype=URIRef('http://www.w3.org/2001/XMLSchema#base64Binary'))
         return Literal(value)
 

@@ -38,7 +38,7 @@ import sys
 from SPARQLWrapper import SPARQLWrapper, JSON
 from SPARQLWrapper.SPARQLExceptions import EndPointNotFound, QueryBadFormed, SPARQLWrapperException
 
-from reader import ReaderPlugin
+from .reader import ReaderPlugin
 from surf.plugin.writer import RDFWriter
 from surf.query import Filter, Group, NamedGroup, Union
 from surf.query.update import insert, delete, clear, load
@@ -67,7 +67,7 @@ def _prepare_add_many_query(resources, context=None):
 
     for resource in resources:
         s = resource.subject
-        for p, objs in resource.rdf_direct.items():
+        for p, objs in list(resource.rdf_direct.items()):
             for o in objs:
                 query.template((s, p, o))
 
@@ -87,11 +87,11 @@ def _prepare_delete_many_query(resources, context, inverse=False):
         where_clause = Group()
 
     subjects = [resource.subject for resource in resources]
-    filter = " OR ".join([u"?s = <{0:s}>".format(subject) for subject in subjects])
+    filter = " OR ".join(["?s = <{0:s}>".format(subject) for subject in subjects])
     filter = Filter("(%s)" % filter)
 
     if inverse:
-        filter2 = " OR ".join([u"?o = <{0:s}>".format(subject) for subject in subjects])
+        filter2 = " OR ".join(["?o = <{0:s}>".format(subject) for subject in subjects])
         filter2 = Filter("(%s)" % filter2)
 
         where1 = Group([("?s", "?p", "?o"), filter])
@@ -152,21 +152,21 @@ class WriterPlugin(RDFWriter):
         return self._endpoint
 
     def _save(self, *resources):
-        for context, items in _group_by_context(resources).iteritems():
+        for context, items in _group_by_context(resources).items():
             # Deletes all triples with matching subjects.
             remove_query = _prepare_delete_many_query(items, context)
             insert_query = _prepare_add_many_query(items, context)
             self._execute(remove_query, insert_query)
 
     def _update(self, *resources):
-        for context, items in _group_by_context(resources).iteritems():
+        for context, items in _group_by_context(resources).items():
             # Explicitly enumerates triples for deletion.
             remove_query = _prepare_selective_delete_query(items, context)
             insert_query = _prepare_add_many_query(items, context)
             self._execute(remove_query, insert_query)
 
     def _remove(self, *resources, **kwargs):
-        for context, items in _group_by_context(resources).iteritems():
+        for context, items in _group_by_context(resources).items():
             # Deletes all triples with matching subjects.
             inverse = kwargs.get("inverse")
             query = _prepare_delete_many_query(items, context, inverse)
@@ -189,7 +189,7 @@ class WriterPlugin(RDFWriter):
     def _execute(self, *queries):
         """ Execute several queries. """
         
-        translated = [unicode(query) for query in queries]  
+        translated = [str(query) for query in queries]  
         if self._combine_queries:
             translated = ["\n".join(translated)]
 
@@ -202,13 +202,13 @@ class WriterPlugin(RDFWriter):
 
             return True
 
-        except EndPointNotFound, _:
-            raise SparqlWriterException("Endpoint not found"), None, sys.exc_info()[2]
-        except QueryBadFormed, _:
-            raise SparqlWriterException("Bad query: %s" % query_str), None, sys.exc_info()[2]
-        except Exception, e:
+        except EndPointNotFound as _:
+            raise SparqlWriterException("Endpoint not found").with_traceback(sys.exc_info()[2])
+        except QueryBadFormed as _:
+            raise SparqlWriterException("Bad query: %s" % query_str).with_traceback(sys.exc_info()[2])
+        except Exception as e:
             msg = "Exception: %s (query: %s)" % (e, query_str)
-            raise SparqlWriterException(msg), None, sys.exc_info()[2]
+            raise SparqlWriterException(msg).with_traceback(sys.exc_info()[2])
 
     def _add_many(self, triples, context=None):
         debug("ADD several triples")
@@ -220,19 +220,19 @@ class WriterPlugin(RDFWriter):
         for s, p, o in triples:
             query.template((s, p, o))
 
-        query_str = unicode(query)
+        query_str = str(query)
         try:
             debug(query_str)
             self._sparql_wrapper.setQuery(query_str)
             self._sparql_wrapper.query().convert()
             return True
 
-        except EndPointNotFound, _:
-            raise SparqlWriterException("Endpoint not found"), None, sys.exc_info()[2]
-        except QueryBadFormed, _:
-            raise SparqlWriterException("Bad query: %s" % query_str), None, sys.exc_info()[2]
-        except Exception, e:
-            raise SparqlWriterException("Exception: %s" % e), None, sys.exc_info()[2]
+        except EndPointNotFound as _:
+            raise SparqlWriterException("Endpoint not found").with_traceback(sys.exc_info()[2])
+        except QueryBadFormed as _:
+            raise SparqlWriterException("Bad query: %s" % query_str).with_traceback(sys.exc_info()[2])
+        except Exception as e:
+            raise SparqlWriterException("Exception: %s" % e).with_traceback(sys.exc_info()[2])
 
     def _add(self, s, p, o, context=None):
         return self._add_many([(s, p, o)], context)
@@ -260,16 +260,16 @@ class WriterPlugin(RDFWriter):
                 where_group.append(filter)
                 query.where(where_group)
 
-            query_str = unicode(query)
+            query_str = str(query)
             debug(query_str)
             self._sparql_wrapper.setQuery(query_str)
             self._sparql_wrapper.query().convert()
             return True
-        except EndPointNotFound, _:
+        except EndPointNotFound as _:
             error("SPARQL endpoint not found")
-        except QueryBadFormed, _:
+        except QueryBadFormed as _:
             error("Bad-formed SPARQL query")
-        except SPARQLWrapperException, _:
+        except SPARQLWrapperException as _:
             error("SPARQLWrapper exception")
 
         return None
@@ -307,7 +307,7 @@ class WriterPlugin(RDFWriter):
             if context:
                 query.into(context)
 
-            query_str = unicode(query)
+            query_str = str(query)
             debug(query_str)
             self._sparql_wrapper.setQuery(query_str)
             self._sparql_wrapper.query().convert()
@@ -323,21 +323,21 @@ class WriterPlugin(RDFWriter):
 
     def _term(self, term):
         if type(term) in [URIRef, BNode]:
-            return u'{0:s}'.format
-        elif type(term) in [str, unicode]:
+            return '{0:s}'.format
+        elif type(term) in [str, str]:
             if term.startswith('?'):
-                return u'{0:s}'.format(term)
+                return '{0:s}'.format(term)
             elif is_uri(term):
-                return u'<{0:s}>'.format(term)
+                return '<{0:s}>'.format(term)
             else:
-                return u'"{0:s}"'.format(term)
+                return '"{0:s}"'.format(term)
         elif type(term) is Literal:
             return term.n3()
         elif type(term) in [list, tuple]:
             return '"{0:s}"@{1:s}'.format(term[0], term[1])
         elif type(term) is type and hasattr(term, 'uri'):
-            return u'{0:s}'.format
+            return '{0:s}'.format
         elif hasattr(term, 'subject'):
-            return u'{0:s}'.format
+            return '{0:s}'.format
 
         return term.__str__()
